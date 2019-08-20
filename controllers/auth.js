@@ -1,11 +1,12 @@
 const db = require('../models');
+const passport = require('../config/passportConfig');
 const router = require('express').Router();
 
 router.get('/signup', (req, res) => {
     res.render('auth/signup');
 })
 
-router.post('/signup', (req, res) => {
+router.post('/signup', (req, res, next) => {
   if (req.body.password !== req.body.password_verify) {
     req.flash('error', 'Passwords do not match!');
     console.log('BIRTHDAY', req.body.birthday)
@@ -20,7 +21,12 @@ router.post('/signup', (req, res) => {
     .spread((user, wasCreated) => {
       if (wasCreated) {
         // This was legitimately a new user, so they got created
-        res.send('Successful creation of user. TODO: Automatically log in now');
+        passport.authenticate('local', {
+          successRedirect: '/profile',
+          successFlash: 'Successful sign up. Welcome!',
+          failureRedirect: '/auth/login',
+          failureFlash: 'This should never happen. Contact your administrator.'
+        })(req, res, next);
       }
       else {
         // The user was found; don't let them create a new account, make them log in
@@ -54,12 +60,17 @@ router.get('/login', (req, res) => {
     res.render('auth/login');
 })
 
-router.post('/login', (req, res) => {
-    res.send('Stub - ToDo: Log in, then redirect');
-})
+router.post('/login', passport.authenticate('local', {
+  successRedirect: '/profile',
+  successFlash: 'Yay you logged in successfully!',
+  failureRedirect: '/auth/login',
+  failureFlash: 'Invalid Credentials!'
+}));
 
 router.get('/logout', (req, res) => {
-    res.render('auth/logout');
-})
+    req.logout(); // Deletes the user from req.user
+    req.flash('success', 'Goodbye – See you next time! 👋');
+    res.redirect('/');
+});
 
 module.exports = router;
