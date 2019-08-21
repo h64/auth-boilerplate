@@ -1,18 +1,18 @@
 <% if (alerts && alerts.error) { %>
-  <div class="error-box closeable-box">
+  <div class="closeable-box card-panel">
+    <h4>Error:</h4>
     <button id="close-error" class="close-button">X</button>
-    <h2>Error:</h2>
     <hr>
     <% alerts.error.forEach(msg => { %>
       <p><%= msg %></p>
-    <% }) %>
-  </div>
+      <% }) %>
+    </div>
 <% } %>
 
 <% if (alerts && alerts.success) { %>
-  <div class="success-box closeable-box">
+  <div class="closeable-box card-panel">
+    <h4>Success:</h4>
     <button id="close-success" class="close-button">X</button>
-    <h2>Success:</h2>
     <hr>
     <% alerts.success.forEach(msg => { %>
       <p><%= msg %></p>
